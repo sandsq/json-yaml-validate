@@ -23,6 +23,7 @@ beforeEach(() => {
   process.env.INPUT_YAML_AS_JSON = 'false'
   process.env.INPUT_USE_DOT_MATCH = 'true'
   process.env.INPUT_USE_AJV_FORMATS = true
+  process.env.INPUT_USE_AJV_ERRORS = true
   process.env.INPUT_YAML_EXTENSION = '.yaml'
   process.env.INPUT_YAML_EXTENSION_SHORT = '.yml'
   process.env.INPUT_FILES = ''
@@ -169,6 +170,35 @@ test('fails to validate a json file without using a schema', async () => {
   )
 })
 
+test('fails to validate a json file with correct types but incorrect constraints with ajv-errors', async () => {
+  process.env.INPUT_JSON_SCHEMA = '__tests__/fixtures/schemas/schema3.json'
+  expect(await jsonValidator(excludeMock)).toStrictEqual({
+    failed: 1,
+    passed: 0,
+    skipped: 0,
+    success: false,
+    violations: [
+      {
+        file: '__tests__/fixtures/json/valid/json1.json',
+        errors: [
+          {
+            path: '/foo',
+            message: 'data.foo should be integer >= 2'
+          },
+          {
+            path: '/bar',
+            message: 'data.bar should be string with length >= 4'
+          }
+        ]
+      }
+    ]
+  })
+  expect(errorMock).toHaveBeenCalledWith(
+    expect.stringMatching(
+      '❌ failed to parse JSON file: __tests__/fixtures/json/valid/json1.json'
+    )
+  )
+})
 test('fails to validate a json file with an incorrect schema', async () => {
   process.env.INPUT_JSON_SCHEMA = '__tests__/fixtures/schemas/schema2.json'
   expect(await jsonValidator(excludeMock)).toStrictEqual({

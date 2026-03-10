@@ -52,6 +52,13 @@ async function schema(jsonSchema) {
     core.debug('ajv-formats will not be used with the json-validator')
   }
 
+  if (core.getBooleanInput('use_ajv_errors')) {
+    core.debug('using ajv-errors with json-validator')
+    require('ajv-errors')(ajv /*, {singleError: true} */)
+  } else {
+    core.debug('ajv-errors will not be used with json-validator')
+  }
+
   // add custom regexp format if provided
   core
     .getMultilineInput('ajv_custom_regexp_formats')
