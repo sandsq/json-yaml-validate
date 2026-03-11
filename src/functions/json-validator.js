@@ -60,7 +60,7 @@ async function schema(jsonSchema) {
       case 'true':
         singleErrorOption = true
         break
-      case 'false' || '':
+      case 'false':
         singleErrorOption = false
         break
       default:
