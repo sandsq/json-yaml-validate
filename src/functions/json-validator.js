@@ -54,13 +54,13 @@ async function schema(jsonSchema) {
 
   if (core.getBooleanInput('use_ajv_errors')) {
     core.debug('using ajv-errors with json-validator')
-    const singleErrorOptionRaw = core.getInput('ajv_errors_single_error').trim()
+    const singleErrorOptionRaw = core.getInput('ajv_errors_single_error')
     let singleErrorOption
     switch (singleErrorOptionRaw) {
       case 'true':
         singleErrorOption = true
         break
-      case 'false':
+      case 'false' || singleErrorOptionRaw.trim().length === 0:
         singleErrorOption = false
         break
       default:
