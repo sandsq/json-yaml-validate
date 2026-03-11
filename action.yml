@@ -49,10 +49,6 @@ inputs:
     description: Whether or not to use the AJV formats - "true" or "false"
     required: false
     default: 'true'
-  use_ajv_errors:
-    description: Whether or not to use the AJV errors - "true" or "false"
-    required: false
-    default: 'false'
   yaml_schema:
     description: The full path to the YAML schema file (e.g. ./schemas/schema.yml) - Default is "" which doesn't enforce a strict schema
     required: false
@@ -101,6 +97,18 @@ inputs:
     description: List of key value pairs of format_name=regexp. Each pair must be on a newline. (e.g. lowercase_chars=^[a-z]*$ )
     required: false
     default: ''
+  use_ajv_errors:
+    description: Whether or not to use the AJV errors - "true" or "false"
+    required: false
+    default: 'false'
+  ajv_errors_keep_errors:
+    description: Whether or not to use the keepErrors option for AJV errors - "true" or "false"
+    required: false
+    default: 'false'
+  ajv_errors_single_errors:
+    description: Whether or not to use the singleError option for AJV errors - "true" or "false"
+    required: false
+    default: 'false'
 outputs:
   success:
     description: Whether or not the validation was successful for all files - "true" or "false"

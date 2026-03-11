@@ -54,7 +54,10 @@ async function schema(jsonSchema) {
 
   if (core.getBooleanInput('use_ajv_errors')) {
     core.debug('using ajv-errors with json-validator')
-    require('ajv-errors')(ajv /*, {singleError: true} */)
+    require('ajv-errors')(ajv, {
+      keepErrors: core.getBooleanInput('ajv_errors_keep_errors'),
+      singleError: core.getBooleanInput('ajv_errors_single_error')
+    })
   } else {
     core.debug('ajv-errors will not be used with json-validator')
   }

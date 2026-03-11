@@ -23,7 +23,6 @@ beforeEach(() => {
   process.env.INPUT_YAML_AS_JSON = 'false'
   process.env.INPUT_USE_DOT_MATCH = 'true'
   process.env.INPUT_USE_AJV_FORMATS = true
-  process.env.INPUT_USE_AJV_ERRORS = true
   process.env.INPUT_YAML_EXTENSION = '.yaml'
   process.env.INPUT_YAML_EXTENSION_SHORT = '.yml'
   process.env.INPUT_FILES = ''
@@ -31,6 +30,9 @@ beforeEach(() => {
   process.env.INPUT_AJV_STRICT_MODE = 'true'
   process.env.INPUT_AJV_CUSTOM_REGEXP_FORMATS = ''
   process.env.INPUT_ALLOW_MULTIPLE_DOCUMENTS = 'false'
+  process.env.INPUT_USE_AJV_ERRORS = true
+  process.env.INPUT_AJV_ERRORS_KEEP_ERRORS = false
+  process.env.INPUT_AJV_ERRORS_SINGLE_ERROR = false
 })
 
 test('successfully validates a json file with a schema', async () => {
@@ -170,8 +172,9 @@ test('fails to validate a json file without using a schema', async () => {
   )
 })
 
-test('fails to validate a json file with correct types but incorrect constraints with ajv-errors', async () => {
-  process.env.INPUT_JSON_SCHEMA = '__tests__/fixtures/schemas/schema3.json'
+test('fails to validate a json file due to incorrect constraints with ajv-errors error message', async () => {
+  process.env.INPUT_JSON_SCHEMA =
+    '__tests__/fixtures/schemas/schema_with_ajv_errors.json'
   expect(await jsonValidator(excludeMock)).toStrictEqual({
     failed: 1,
     passed: 0,
