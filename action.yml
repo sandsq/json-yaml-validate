@@ -98,15 +98,15 @@ inputs:
     required: false
     default: ''
   use_ajv_errors:
-    description: Whether or not to use the AJV errors - "true" or "false"
+    description: Whether or not to use AJV errors - "true" or "false" - Default is "false"
     required: false
     default: 'false'
   ajv_errors_keep_errors:
-    description: Whether or not to use the keepErrors option for AJV errors - "true" or "false"
+    description: Whether or not to use the keepErrors option for AJV errors - "true" or "false" - Default is "false"
     required: false
     default: 'false'
   ajv_errors_single_errors:
-    description: Whether or not to use the singleError option for AJV errors - "true" or "false"
+    description: Whether or not to use the singleError option for AJV errors - "true" or "false" or a string to be used as a separator to concatenate messages - Default is "false"
     required: false
     default: 'false'
 outputs:

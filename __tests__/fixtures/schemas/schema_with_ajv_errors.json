@@ -1,15 +1,16 @@
 {
   "type": "object",
-  "required": ["foo", "bar"],
+  "required": ["foo"],
   "properties": {
-    "foo": {"type": "integer", "minimum": 2},
-    "bar": {"type": "string", "minLength": 4}
+    "foo": {"type": "integer", "minimum": 2}
   },
   "additionalProperties": false,
   "errorMessage": {
+    "type": "should be an object",
+    "required": "should have property foo",
     "properties": {
-      "foo": "data.foo should be integer >= 2",
-      "bar": "data.bar should be string with length >= 4"
-    }
+      "foo": "foo should be an integer >= 2"
+    },
+    "additionalProperties": "should not have properties other than foo"
   }
 }

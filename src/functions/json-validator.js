@@ -54,9 +54,22 @@ async function schema(jsonSchema) {
 
   if (core.getBooleanInput('use_ajv_errors')) {
     core.debug('using ajv-errors with json-validator')
+    const singleErrorOptionRaw = core.getInput('ajv_errors_single_error').trim()
+    let singleErrorOption
+    switch (singleErrorOptionRaw) {
+      case 'true':
+        singleErrorOption = true
+        break
+      case 'false' || '':
+        singleErrorOption = false
+        break
+      default:
+        singleErrorOption = singleErrorOptionRaw
+    }
+
     require('ajv-errors')(ajv, {
       keepErrors: core.getBooleanInput('ajv_errors_keep_errors'),
-      singleError: core.getBooleanInput('ajv_errors_single_error')
+      singleError: singleErrorOption
     })
   } else {
     core.debug('ajv-errors will not be used with json-validator')

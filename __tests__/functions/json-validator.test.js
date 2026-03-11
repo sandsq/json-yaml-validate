@@ -30,7 +30,7 @@ beforeEach(() => {
   process.env.INPUT_AJV_STRICT_MODE = 'true'
   process.env.INPUT_AJV_CUSTOM_REGEXP_FORMATS = ''
   process.env.INPUT_ALLOW_MULTIPLE_DOCUMENTS = 'false'
-  process.env.INPUT_USE_AJV_ERRORS = true
+  process.env.INPUT_USE_AJV_ERRORS = false
   process.env.INPUT_AJV_ERRORS_KEEP_ERRORS = false
   process.env.INPUT_AJV_ERRORS_SINGLE_ERROR = false
 })
@@ -172,36 +172,6 @@ test('fails to validate a json file without using a schema', async () => {
   )
 })
 
-test('fails to validate a json file due to incorrect constraints with ajv-errors error message', async () => {
-  process.env.INPUT_JSON_SCHEMA =
-    '__tests__/fixtures/schemas/schema_with_ajv_errors.json'
-  expect(await jsonValidator(excludeMock)).toStrictEqual({
-    failed: 1,
-    passed: 0,
-    skipped: 0,
-    success: false,
-    violations: [
-      {
-        file: '__tests__/fixtures/json/valid/json1.json',
-        errors: [
-          {
-            path: '/foo',
-            message: 'data.foo should be integer >= 2'
-          },
-          {
-            path: '/bar',
-            message: 'data.bar should be string with length >= 4'
-          }
-        ]
-      }
-    ]
-  })
-  expect(errorMock).toHaveBeenCalledWith(
-    expect.stringMatching(
-      '❌ failed to parse JSON file: __tests__/fixtures/json/valid/json1.json'
-    )
-  )
-})
 test('fails to validate a json file with an incorrect schema', async () => {
   process.env.INPUT_JSON_SCHEMA = '__tests__/fixtures/schemas/schema2.json'
   expect(await jsonValidator(excludeMock)).toStrictEqual({
@@ -258,6 +228,131 @@ test('fails to validate one json file with an incorrect schema and succeeds on t
   expect(errorMock).toHaveBeenCalledWith(
     expect.stringMatching(
       '❌ failed to parse JSON file: __tests__/fixtures/json/mixture/json1.json'
+    )
+  )
+})
+
+test('fails to validate a json file with an incorrect schema using custom ajv-errors error messages', async () => {
+  process.env.INPUT_USE_AJV_ERRORS = true
+  process.env.INPUT_FILES = '__tests__/fixtures/json/ajv_errors/json1.json'
+  process.env.INPUT_JSON_SCHEMA =
+    '__tests__/fixtures/schemas/schema_with_ajv_errors.json'
+  expect(await jsonValidator(excludeMock)).toStrictEqual({
+    failed: 1,
+    passed: 0,
+    skipped: 0,
+    success: false,
+    violations: [
+      {
+        file: '__tests__/fixtures/json/ajv_errors/json1.json',
+        errors: [
+          {
+            path: '/foo',
+            message: 'foo should be an integer >= 2'
+          }
+        ]
+      }
+    ]
+  })
+  expect(errorMock).toHaveBeenCalledWith(
+    expect.stringMatching(
+      '❌ failed to parse JSON file: __tests__/fixtures/json/ajv_errors/json1.json'
+    )
+  )
+})
+
+test('fails to validate a json file with an incorrect schema using custom ajv-errors error messages with keepErrors option enabled', async () => {
+  process.env.INPUT_USE_AJV_ERRORS = true
+  process.env.INPUT_AJV_ERRORS_KEEP_ERRORS = true
+  process.env.INPUT_FILES = '__tests__/fixtures/json/ajv_errors/json1.json'
+  process.env.INPUT_JSON_SCHEMA =
+    '__tests__/fixtures/schemas/schema_with_ajv_errors.json'
+  expect(await jsonValidator(excludeMock)).toStrictEqual({
+    failed: 1,
+    passed: 0,
+    skipped: 0,
+    success: false,
+    violations: [
+      {
+        file: '__tests__/fixtures/json/ajv_errors/json1.json',
+        errors: [
+          {
+            path: '/foo',
+            message: 'must be >= 2'
+          },
+          {
+            path: '/foo',
+            message: 'foo should be an integer >= 2'
+          }
+        ]
+      }
+    ]
+  })
+  expect(errorMock).toHaveBeenCalledWith(
+    expect.stringMatching(
+      '❌ failed to parse JSON file: __tests__/fixtures/json/ajv_errors/json1.json'
+    )
+  )
+})
+
+test('fails to validate a json file with an incorrect schema using custom ajv-errors error messages with singleError option enabled as true', async () => {
+  process.env.INPUT_USE_AJV_ERRORS = true
+  process.env.INPUT_AJV_ERRORS_SINGLE_ERROR = true
+  process.env.INPUT_FILES = '__tests__/fixtures/json/ajv_errors/json2.json'
+  process.env.INPUT_JSON_SCHEMA =
+    '__tests__/fixtures/schemas/schema_with_ajv_errors.json'
+  expect(await jsonValidator(excludeMock)).toStrictEqual({
+    failed: 1,
+    passed: 0,
+    skipped: 0,
+    success: false,
+    violations: [
+      {
+        file: '__tests__/fixtures/json/ajv_errors/json2.json',
+        errors: [
+          {
+            path: null,
+            message:
+              'should have property foo;should not have properties other than foo'
+          }
+        ]
+      }
+    ]
+  })
+  expect(errorMock).toHaveBeenCalledWith(
+    expect.stringMatching(
+      '❌ failed to parse JSON file: __tests__/fixtures/json/ajv_errors/json2.json'
+    )
+  )
+})
+
+test('fails to validate a json file with an incorrect schema using custom ajv-errors error messages with singleError option set to non-empty string', async () => {
+  process.env.INPUT_USE_AJV_ERRORS = true
+  process.env.INPUT_AJV_ERRORS_SINGLE_ERROR = ','
+  process.env.INPUT_FILES = '__tests__/fixtures/json/ajv_errors/json2.json'
+  process.env.INPUT_JSON_SCHEMA =
+    '__tests__/fixtures/schemas/schema_with_ajv_errors.json'
+  expect(await jsonValidator(excludeMock)).toStrictEqual({
+    failed: 1,
+    passed: 0,
+    skipped: 0,
+    success: false,
+    violations: [
+      {
+        file: '__tests__/fixtures/json/ajv_errors/json2.json',
+        errors: [
+          {
+            path: null,
+            message:
+              'should have property foo,should not have properties other than foo'
+          }
+        ]
+      }
+    ]
+  })
+  expect(errorMock).toHaveBeenCalledWith(
+    expect.stringMatching(
+      '❌ failed to parse JSON file: __tests__/fixtures/json/ajv_errors/json2.json'
     )
   )
 })
